@@ -39,3 +39,8 @@ Route::get('/products/{id}', function ($id) {
     $products = \App\Models\Product::find($id);
     return new \App\Http\Resources\ProductResource($products);
 });
+
+Route::get('/products', function () {
+    $products = \App\Models\Product::all();
+    return new \App\Http\Resources\ProductCollection($products);
+});
