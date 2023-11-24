@@ -24,3 +24,8 @@ Route::get('/categories/{id}', function ($id) {
     $category = Category::findOrFail($id);
     return new CategoryResource($category);
 });
+
+Route::get('/categories', function () {
+    $categories = Category::all();
+    return CategoryResource::collection($categories);
+});
