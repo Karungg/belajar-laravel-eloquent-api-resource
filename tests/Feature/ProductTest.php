@@ -26,6 +26,7 @@ class ProductTest extends TestCase
                         "name" => $product->category->name
                     ],
                     "price" => $product->price,
+                    "is_expensive" => $product->price > 1000,
                     "created_at" => $product->created_at->toJSON(),
                     "updated_at" => $product->updated_at->toJSON()
                 ]
@@ -56,5 +57,40 @@ class ProductTest extends TestCase
         self::assertNotNull($response->json("links"));
         self::assertNotNull($response->json("meta"));
         self::assertNotNull($response->json("data"));
+    }
+
+    public function testAdditionalData()
+    {
+        $this->seed([CategorySeeder::class, ProductSeeder::class]);
+        $product = Product::first();
+
+        $this->get("/api/products-debug/$product->id")
+            ->assertStatus(200)
+            ->assertJson([
+                "author" => "Miftah Fadilah",
+                "data" => [
+                    "id" => $product->id,
+                    "name" => $product->name,
+                    "price" => $product->price,
+                ]
+            ]);
+    }
+
+    public function testAdditionalDynamicParam()
+    {
+        $this->seed([CategorySeeder::class, ProductSeeder::class]);
+        $product = Product::first();
+        $response = $this->get("/api/products-debug/$product->id")
+            ->assertStatus(200)
+            ->assertJson([
+                "author" => "Miftah Fadilah",
+                "data" => [
+                    "id" => $product->id,
+                    "name" => $product->name,
+                    "price" => $product->price,
+                ]
+            ]);
+
+        self::assertNotNull($response->json("server_time"));
     }
 }

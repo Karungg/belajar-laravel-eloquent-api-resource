@@ -1,7 +1,5 @@
 <?php
 
-use App\Http\Resources\CategoryResource;
-use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,22 +19,23 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/categories/{id}', function ($id) {
-    $category = Category::findOrFail($id);
-    return new CategoryResource($category);
+    $category = \App\Models\Category::findOrFail($id);
+    return new \App\Http\Resources\CategoryResource($category);
 });
 
 Route::get('/categories', function () {
-    $categories = Category::all();
-    return CategoryResource::collection($categories);
+    $categories = \App\Models\Category::all();
+    return \App\Http\Resources\CategoryResource::collection($categories);
 });
 
 Route::get('/categories-custom', function () {
-    $categories = Category::all();
+    $categories = \App\Models\Category::all();
     return new \App\Http\Resources\CategoryCollection($categories);
 });
 
 Route::get('/products/{id}', function ($id) {
     $products = \App\Models\Product::find($id);
+    $products->load("category");
     return new \App\Http\Resources\ProductResource($products);
 });
 
@@ -48,5 +47,10 @@ Route::get('/products', function () {
 Route::get('/products-paging', function (Request $request) {
     $page = $request->get('page', 1);
     $products = \App\Models\Product::paginate(perPage: 2, page: $page);
-    return new App\Http\Resources\ProductCollection($products);
+    return new \App\Http\Resources\ProductCollection($products);
+});
+
+Route::get('/products-debug/{id}', function ($id) {
+    $products = \App\Models\Product::find($id);
+    return new \App\Http\Resources\ProductDebugResource($products);
 });
