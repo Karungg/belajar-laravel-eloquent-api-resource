@@ -36,7 +36,9 @@ Route::get('/categories-custom', function () {
 Route::get('/products/{id}', function ($id) {
     $products = \App\Models\Product::find($id);
     $products->load("category");
-    return new \App\Http\Resources\ProductResource($products);
+    return (new \App\Http\Resources\ProductResource($products))
+        ->response()
+        ->header("X-Powered-By", "Miftah Fadilah");
 });
 
 Route::get('/products', function () {

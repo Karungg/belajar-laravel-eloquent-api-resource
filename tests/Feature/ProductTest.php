@@ -11,7 +11,7 @@ use Tests\TestCase;
 
 class ProductTest extends TestCase
 {
-    public function testProduct()
+    public function testProducts()
     {
         $this->seed([CategorySeeder::class, ProductSeeder::class]);
         $product = Product::first();
@@ -92,5 +92,27 @@ class ProductTest extends TestCase
             ]);
 
         self::assertNotNull($response->json("server_time"));
+    }
+
+    public function testName()
+    {
+        $this->seed([CategorySeeder::class, ProductSeeder::class]);
+        $product = Product::first();
+        $this->get("/api/products/$product->id")
+            ->assertStatus(200)
+            ->assertHeader("X-Powered-By", "Miftah Fadilah")
+            ->assertJson([
+                "value" => [
+                    "name" => $product->name,
+                    "category" => [
+                        "id" => $product->category->id,
+                        "name" => $product->category->name
+                    ],
+                    "price" => $product->price,
+                    "is_expensive" => $product->price > 1000,
+                    "created_at" => $product->created_at->toJSON(),
+                    "updated_at" => $product->updated_at->toJSON()
+                ]
+            ]);
     }
 }
